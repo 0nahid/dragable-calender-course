@@ -1,5 +1,7 @@
 .container {
   display: flex;
+  width: 1200px;
+  margin: 0 auto;
 }
 
 .src-column,
@@ -13,7 +15,7 @@
 }
 
 .playground-column {
-  width: 50%;
+  width: 100%;
 }
 
 .droppable-area {
@@ -21,11 +23,12 @@
 }
 
 .draggable-course {
-  background-color: #f4f4f4;
-  border: 1px solid #ccc;
+  /* background-color: #f4f4f4; */
+  /* border: 1px solid #ccc; */
   border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 10px;
-  box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1);
+  
+  /* padding: 10px; */
+  /* margin-bottom: 10px; */
+  /* box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1); */
   /* width: 200px; */
 }

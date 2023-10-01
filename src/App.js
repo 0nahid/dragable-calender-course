@@ -1,54 +1,116 @@
-import { Button, Calendar, Card, Form, Input, Modal } from "antd";
+import { Button, Calendar, Card, Form, Input, Modal, TimePicker } from "antd";
+import moment from "moment/moment";
 import React, { useState } from "react";
 import "./DragAndDropCalendar.css";
-
+const myDate = moment(); // Create a Moment.js object
+myDate.locale("en"); // Correct
 const DragAndDropCalendar = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-const [selectedCourse, setSelectedCourse] = useState(null);
-const [editedCourseName, setEditedCourseName] = useState("");
-
-const showModal = (course) => {
-  setSelectedCourse(course);
-  setEditedCourseName(course.name);
-  setIsModalVisible(true);
-};
-const handleUpdateCourse = () => {
-  const updatedCourses = courses.map((course) => {
-    if (course.id === selectedCourse.id) {
-      return { ...course, name: editedCourseName };
-    }
-    return course;
-  });
-  setCourses(updatedCourses);
-  setIsModalVisible(false);
-};
-
-
-const handleCancel = () => {
-  setIsModalVisible(false);
-};
-
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [editedCourseName, setEditedCourseName] = useState("");
   const [courseName, setCourseName] = useState("");
-  const addCourse = () => {
-    console.log(courseName);
-    const newCourse = { id: Date.now(), name: courseName };
-    setCourses([...courses, newCourse]);
-    setCourseName("");
+  const [courseTitle, setCourseTitle] = useState("");
+  const [courseDescription, setCourseDescription] = useState("");
+  const [courseTime, setCourseTime] = useState([]);
+  const [courseAmount, setCourseAmount] = useState(0);
+  const [courseTags, setCourseTags] = useState([]);
+
+  const [editedCourseTitle, setEditedCourseTitle] = useState("");
+  const [editedCourseDescription, setEditedCourseDescription] = useState("");
+  const [editedCourseTime, setEditedCourseTime] = useState([]);
+
+  const [editedCourseAmount, setEditedCourseAmount] = useState(0);
+  const [editedCourseTags, setEditedCourseTags] = useState([]);
+  const showModal = (course) => {
+    console.log("Received course:", course); // Debug line
+
+    if (course) {
+      const { name, title, description, time, amount, tags } = course;
+      setSelectedCourse(course);
+      setEditedCourseName(name);
+      setEditedCourseTitle(title);
+      setEditedCourseDescription(description);
+      // Format the time range
+      setEditedCourseTime(time);
+      setEditedCourseAmount(amount);
+      setEditedCourseTags(tags);
+    } else {
+      console.warn("Undefined or null course object received"); // Debug line
+    }
+
+    setIsModalVisible(true);
+  };
+
+  const handleUpdateCourse = () => {
+    const updatedCourses = courses.map((course) => {
+      if (course.id === selectedCourse.id) {
+        return {
+          ...course,
+          name: editedCourseName,
+          title: editedCourseTitle,
+          description: editedCourseDescription,
+          time: editedCourseTime,
+          amount: editedCourseAmount,
+          tags: editedCourseTags,
+        };
+      }
+      return course;
+    });
+    setCourses(updatedCourses);
+    setIsModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
   };
   const [courses, setCourses] = useState([
-    { id: 1, name: "Math 101" },
-    { id: 2, name: "History 201" },
+    {
+      id: 1,
+      name: "Math 101",
+      title: "Advanced Math",
+      description: "Algebra and Geometry",
+      time: "10:00 AM - 12:00 AM",
+      amount: 100,
+      tags: ["math", "algebra"],
+    },
+    // ... other courses
   ]);
+
+  const addCourse = () => {
+    const formatTime = `${(courseTime[0]).format("hh:mm A")} - ${(
+      courseTime[1]
+    ).format("hh:mm A")}`;
+
+    const newCourse = {
+      id: Date.now(),
+      name: courseName,
+      title: courseTitle,
+      description: courseDescription,
+      time: formatTime,
+      amount: courseAmount,
+      tags: courseTags,
+    };
+    console.log("New course:", newCourse);
+    setCourses([...courses, newCourse]);
+    setCourseName("");
+    setCourseTitle("");
+    setCourseDescription("");
+    setCourseTime([]);
+    setCourseAmount(0);
+    setCourseTags([]);
+  };
+
   const [calendarEvents, setCalendarEvents] = useState({});
   const cardStyle = {
-    margin: "10px",
-    // cursor: "move",
-    
+    backgroundColor: "#fff",
+    borderRadius: "3px",
+    margin: "3px",
+    padding: "3px",
   };
-  
+
   const handleDateCellRender = (value) => {
     const dateString = value.format("YYYY-MM-DD");
-  
+
     return (
       <div
         className="droppable-area"
@@ -56,7 +118,7 @@ const handleCancel = () => {
         onDragOver={(e) => e.preventDefault()}
       >
         {calendarEvents[dateString]?.map((course, index) => (
-          <Card
+          <div
             key={course.id}
             className="draggable-course"
             draggable
@@ -67,21 +129,21 @@ const handleCancel = () => {
             }}
           >
             {course.name}
-          </Card>
+          </div>
         ))}
       </div>
     );
   };
-  
+
   const handleDrop = (e, dateString) => {
     e.preventDefault();
     const courseId = parseInt(e.dataTransfer.getData("courseId"));
     const courseIndex = courses.findIndex((c) => c.id === courseId);
-    
+
     if (courseIndex !== -1) {
       const course = courses[courseIndex];
       setCourses(courses.filter((c, index) => index !== courseIndex));
-  
+
       setCalendarEvents((prevEvents) => ({
         ...prevEvents,
         [dateString]: [...(prevEvents[dateString] || []), course],
@@ -92,48 +154,89 @@ const handleCancel = () => {
   const handleSourceDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     const courseId = parseInt(e.dataTransfer.getData("courseId"), 10);
     const dateString = e.dataTransfer.getData("eventDate");
-  
+
     console.log(`Dropped course ID: ${courseId}, Date: ${dateString}`);
-    
+
     // Remove the course from calendarEvents
     const newCalendarEvents = { ...calendarEvents };
     const coursesOnDate = newCalendarEvents[dateString] || [];
-    const updatedCoursesOnDate = coursesOnDate.filter(course => course.id !== courseId);
-  
+    const updatedCoursesOnDate = coursesOnDate.filter(
+      (course) => course.id !== courseId
+    );
+
     if (updatedCoursesOnDate.length > 0) {
       newCalendarEvents[dateString] = updatedCoursesOnDate;
     } else {
       delete newCalendarEvents[dateString];
     }
-  
+
     // Add the course back to the source (courses)
-    const courseToAddBack = coursesOnDate.find(course => course.id === courseId);
+    const courseToAddBack = coursesOnDate.find(
+      (course) => course.id === courseId
+    );
     if (courseToAddBack) {
       setCourses([...courses, courseToAddBack]);
     }
-  
+
     setCalendarEvents(newCalendarEvents);
   };
-  
-
 
   return (
     <div className="container">
       <div
-  className="src-column"
-  onDrop={handleSourceDrop}
-  onDragOver={(e) => e.preventDefault()}
-  style={{ height: '400px', border: '1px solid black' }} 
->
-      <Form onFinish={addCourse}>
-          <Form.Item>
+        className="src-column"
+        onDrop={handleSourceDrop}
+        onDragOver={(e) => e.preventDefault()}
+        style={{ 
+          backgroundColor: "#f0f2f5",
+          borderRadius: "10px",
+          margin: "20px",
+         }}
+      >
+        <Form onFinish={addCourse}>
+          <Form.Item label="Course Name">
             <Input
               value={courseName}
               onChange={(e) => setCourseName(e.target.value)}
-              placeholder="Enter course name"
+            />
+          </Form.Item>
+          <Form.Item label="Course Title">
+            <Input
+              value={courseTitle}
+              onChange={(e) => setCourseTitle(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item label="Description">
+            <Input
+              value={courseDescription}
+              onChange={(e) => setCourseDescription(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item label="Time">
+            <TimePicker.RangePicker
+              format="HH:mm"
+              value={courseTime}
+              onChange={(time) => {
+                setCourseTime(time);
+              }}
+            />
+          </Form.Item>
+
+          <Form.Item label="Amount">
+            <Input
+              type="number"
+              value={courseAmount}
+              onChange={(e) => setCourseAmount(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item label="Tags">
+            {/* Ant Design has a Tags Input but here's a simple one for example */}
+            <Input
+              value={courseTags.join(", ")}
+              onChange={(e) => setCourseTags(e.target.value.split(", "))}
             />
           </Form.Item>
           <Form.Item>
@@ -142,53 +245,54 @@ const handleCancel = () => {
             </Button>
           </Form.Item>
         </Form>
-        <div style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          margin:"20px",
-          // height: "100%",
-        }}>
-        {courses.map((course) => (
-         <Card
-         key={course.id}
-         className="draggable-course"
-         style={cardStyle}
-         draggable
-         onDragStart={(e) => {
-          e.dataTransfer.setData("courseId", course.id.toString());
-          e.dataTransfer.setData("eventDate", course.date); // assuming each course has a date field
-        }}
-        
-        
-         onClick={() => showModal(course)}
-       >
-         {course.name}
-       </Card>
-       
-        ))}
+
+        <div
+          style={{
+            display: "flex",
+            // justifyContent: "center",
+            // alignItems: "center",
+            // margin: "20px",
+            // height: "100%",
+          }}
+        >
+          {courses.map((course) => (
+            <Card
+              key={course.id}
+              className="draggable-course"
+              style={{
+                cursor: "move"
+              }}
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData("courseId", course.id.toString());
+                e.dataTransfer.setData("eventDate", course.date); // assuming each course has a date field
+              }}
+              onClick={() => showModal(course)}
+            >
+              {course.name}
+            </Card>
+          ))}
         </div>
       </div>
       <div className="playground-column">
         <Calendar cellRender={handleDateCellRender} />
       </div>
       <Modal
-      title="Edit Course Details"
-      visible={isModalVisible}
-      onCancel={handleCancel}
-      onOk={handleUpdateCourse}
-    >
-      <Form>
-        <Form.Item label="Course Name">
-          <Input
-            value={editedCourseName}
-            onChange={(e) => setEditedCourseName(e.target.value)}
-          />
-        </Form.Item>
-      </Form>
-    </Modal>
-
-
+        title="Edit Course Details"
+        open={isModalVisible}
+        onCancel={handleCancel}
+        onOk={handleUpdateCourse}
+      >
+        {editedCourseTags}
+        <br />
+        {editedCourseAmount}
+        <br />
+        {editedCourseTime}
+        <br />
+        {editedCourseDescription}
+        <br />
+        {editedCourseTitle}
+      </Modal>
     </div>
   );
 };
