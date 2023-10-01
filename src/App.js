@@ -320,52 +320,77 @@ const DragAndDropCalendar = () => {
         <Calendar cellRender={handleDateCellRender} />
       </div>
       <Modal
-        title="Edit Course Details"
-        open={isModalVisible}
-        onCancel={handleCancel}
-        onOk={handleUpdateCourse}
-      >
-        <Form layout="horizontal">
-          <Form.Item label="Course Name">
+    title="Edit Course Details"
+    open={isModalVisible}
+    onCancel={handleCancel}
+    onOk={handleUpdateCourse}
+>
+    <Form layout="horizontal">
+        <Form.Item
+            label="Course Name"
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 14, offset: 4 }}
+        >
             <Input
-              value={editedCourseName}
-              onChange={(e) => setEditedCourseName(e.target.value)}
+                value={editedCourseName}
+                onChange={(e) => setEditedCourseName(e.target.value)}
             />
-          </Form.Item>
-          <Form.Item label="Course Title">
+        </Form.Item>
+        <Form.Item
+            label="Course Title"
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 14, offset: 4 }}
+        >
             <Input
-              value={editedCourseTitle}
-              onChange={(e) => setEditedCourseTitle(e.target.value)}
+                value={editedCourseTitle}
+                onChange={(e) => setEditedCourseTitle(e.target.value)}
             />
-          </Form.Item>
-          <Form.Item label="Description">
+        </Form.Item>
+        <Form.Item
+            label="Description"
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 14, offset: 4 }}
+        >
             <Input
-              value={editedCourseDescription}
-              onChange={(e) => setEditedCourseDescription(e.target.value)}
+                value={editedCourseDescription}
+                onChange={(e) => setEditedCourseDescription(e.target.value)}
             />
-          </Form.Item>
-          <Form.Item label="Time">
+        </Form.Item>
+        <Form.Item
+            label="Time"
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 14, offset: 4 }}
+        >
             <TimePicker.RangePicker
-              format="HH:mm"
-              value={editedCourseTime}
-              onChange={(time) => setEditedCourseTime(time)}
+                format="HH:mm"
+                value={editedCourseTime}
+                onChange={(time) => setEditedCourseTime(time)}
             />
-          </Form.Item>
-          <Form.Item label="Amount">
+        </Form.Item>
+        <Form.Item
+            label="Amount"
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 14, offset: 4 }}
+        >
             <Input
-              type="number"
-              value={editedCourseAmount}
-              onChange={(e) => setEditedCourseAmount(e.target.value)}
+                type="number"
+                value={editedCourseAmount}
+                onChange={(e) => setEditedCourseAmount(e.target.value)}
             />
-          </Form.Item>
-          <Form.Item label="Tags">
+        </Form.Item>
+        <Form.Item
+            label="Tags"
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 14, offset: 4 }}
+        >
             <Input
-              value={editedCourseTags.join(", ")}
-              onChange={(e) => setEditedCourseTags(e.target.value.split(", "))}
+                value={editedCourseTags.join(", ")}
+                onChange={(e) => setEditedCourseTags(e.target.value.split(", "))}
             />
-          </Form.Item>
-        </Form>
-      </Modal>
+        </Form.Item>
+    </Form>
+</Modal>
+
     </div>
   );
 };
