@@ -1,15 +1,8 @@
-import { Button, Calendar, Card, Form, Input } from "antd";
+import { Calendar, Card } from "antd";
 import React, { useState } from "react";
 import "./DragAndDropCalendar.css";
 
 const DragAndDropCalendar = () => {
-  const [courseName, setCourseName] = useState("");
-  const addCourse = () => {
-    console.log(courseName);
-    const newCourse = { id: Date.now(), name: courseName };
-    setCourses([...courses, newCourse]);
-    setCourseName("");
-  };
   const [courses, setCourses] = useState([
     { id: 1, name: "Math 101" },
     { id: 2, name: "History 201" },
@@ -49,20 +42,6 @@ const DragAndDropCalendar = () => {
   return (
     <div className="container">
       <div className="src-column">
-      <Form onFinish={addCourse}>
-          <Form.Item>
-            <Input
-              value={courseName}
-              onChange={(e) => setCourseName(e.target.value)}
-              placeholder="Enter course name"
-            />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Add Course
-            </Button>
-          </Form.Item>
-        </Form>
         {courses.map((course) => (
           <Card
             key={course.id}
@@ -77,7 +56,7 @@ const DragAndDropCalendar = () => {
         ))}
       </div>
       <div className="playground-column">
-        <Calendar cellRender={handleDateCellRender} />
+        <Calendar dateCellRender={handleDateCellRender} />
       </div>
     </div>
   );

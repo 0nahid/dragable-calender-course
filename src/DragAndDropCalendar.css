@@ -1,0 +1,25 @@
+.container {
+    display: flex;
+  }
+  
+  .src-column, .playground-column {
+    padding: 20px;
+    width: 50%;
+  }
+  
+  .src-column {
+    border-right: 1px solid #ccc;
+  }
+  
+  .playground-column {
+    width: 50%;
+  }
+  
+  .droppable-area {
+    min-height: 50px;
+  }
+  
+  .draggable-course {
+    margin-bottom: 10px;
+  }
+  
