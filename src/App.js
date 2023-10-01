@@ -22,18 +22,23 @@ const DragAndDropCalendar = () => {
   const [editedCourseAmount, setEditedCourseAmount] = useState(0);
   const [editedCourseTags, setEditedCourseTags] = useState([]);
   const showModal = (course) => {
-    console.log("Received course:", course); // Debug line
 
     if (course) {
       const { name, title, description, time, amount, tags } = course;
-      setSelectedCourse(course);
-      setEditedCourseName(name);
-      setEditedCourseTitle(title);
-      setEditedCourseDescription(description);
-      // Format the time range
-      setEditedCourseTime(time);
-      setEditedCourseAmount(amount);
-      setEditedCourseTags(tags);
+      if (typeof time === 'string') {
+        setSelectedCourse(course);
+        setEditedCourseName(name);
+        setEditedCourseTitle(title);
+        setEditedCourseDescription(description);
+        
+       const formatTime = time.split(" - ").map((t) => moment(t, "hh:mm A"));
+        console.log("Format time:", formatTime);
+  
+        setEditedCourseTime(formatTime);
+        setEditedCourseAmount(amount);
+        setEditedCourseTags(tags);
+      }
+      
     } else {
       console.warn("Undefined or null course object received"); // Debug line
     }
@@ -90,7 +95,7 @@ const DragAndDropCalendar = () => {
       amount: courseAmount,
       tags: courseTags,
     };
-    console.log("New course:", newCourse);
+    // console.log("New course:", newCourse);
     setCourses([...courses, newCourse]);
     setCourseName("");
     setCourseTitle("");
@@ -274,42 +279,40 @@ const DragAndDropCalendar = () => {
             padding: "10px",
           }}
         >
-          {courses.map((course,index) => (
-            
-           <div
-            key={course.id}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "5px",
-            }}
-           >
-           <span
-            style={{
-              marginRight: "10px",
-              
-            }}
-           >
-            {index+1}
-           </span>
-           <Card
+          {courses.map((course, index) => (
+            <div
               key={course.id}
-              className="draggable-course"
               style={{
-                cursor: "move",
-                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "5px",
               }}
-              draggable
-              onDragStart={(e) => {
-                e.dataTransfer.setData("courseId", course.id.toString());
-                e.dataTransfer.setData("eventDate", course.date); // assuming each course has a date field
-              }}
-              onClick={() => showModal(course)}
             >
-              {course.name}
-            </Card>
-           </div>
+              <span
+                style={{
+                  marginRight: "10px",
+                }}
+              >
+                {index + 1}
+              </span>
+              <Card
+                key={course.id}
+                className="draggable-course"
+                style={{
+                  cursor: "move",
+                  width: "100%",
+                }}
+                draggable
+                onDragStart={(e) => {
+                  e.dataTransfer.setData("courseId", course.id.toString());
+                  e.dataTransfer.setData("eventDate", course.date); // assuming each course has a date field
+                }}
+                onClick={() => showModal(course)}
+              >
+                {course.name}
+              </Card>
+            </div>
           ))}
         </div>
       </div>
@@ -322,15 +325,46 @@ const DragAndDropCalendar = () => {
         onCancel={handleCancel}
         onOk={handleUpdateCourse}
       >
-        {editedCourseTags}
-        <br />
-        {editedCourseAmount}
-        <br />
-        {editedCourseTime}
-        <br />
-        {editedCourseDescription}
-        <br />
-        {editedCourseTitle}
+        <Form layout="horizontal">
+          <Form.Item label="Course Name">
+            <Input
+              value={editedCourseName}
+              onChange={(e) => setEditedCourseName(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item label="Course Title">
+            <Input
+              value={editedCourseTitle}
+              onChange={(e) => setEditedCourseTitle(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item label="Description">
+            <Input
+              value={editedCourseDescription}
+              onChange={(e) => setEditedCourseDescription(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item label="Time">
+            <TimePicker.RangePicker
+              format="HH:mm"
+              value={editedCourseTime}
+              onChange={(time) => setEditedCourseTime(time)}
+            />
+          </Form.Item>
+          <Form.Item label="Amount">
+            <Input
+              type="number"
+              value={editedCourseAmount}
+              onChange={(e) => setEditedCourseAmount(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item label="Tags">
+            <Input
+              value={editedCourseTags.join(", ")}
+              onChange={(e) => setEditedCourseTags(e.target.value.split(", "))}
+            />
+          </Form.Item>
+        </Form>
       </Modal>
     </div>
   );
