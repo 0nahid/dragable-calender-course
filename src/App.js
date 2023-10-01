@@ -36,8 +36,8 @@ const handleCancel = () => {
     setCourseName("");
   };
   const [courses, setCourses] = useState([
-    // { id: 1, name: "Math 101" },
-    // { id: 2, name: "History 201" },
+    { id: 1, name: "Math 101" },
+    { id: 2, name: "History 201" },
   ]);
   const [calendarEvents, setCalendarEvents] = useState({});
   const cardStyle = {
@@ -48,6 +48,7 @@ const handleCancel = () => {
   
   const handleDateCellRender = (value) => {
     const dateString = value.format("YYYY-MM-DD");
+  
     return (
       <div
         className="droppable-area"
@@ -56,38 +57,77 @@ const handleCancel = () => {
       >
         {calendarEvents[dateString]?.map((course, index) => (
           <Card
-          key={course.id}
-          className="draggable-course"
-          draggable
-          style={cardStyle}
-          onDragStart={(e) =>
-            e.dataTransfer.setData("courseId", course.id.toString())
-          }
-        >
-          {course.name}
-        </Card>
-        
+            key={course.id}
+            className="draggable-course"
+            draggable
+            style={cardStyle}
+            onDragStart={(e) => {
+              e.dataTransfer.setData("courseId", course.id.toString());
+              e.dataTransfer.setData("eventDate", dateString); // Make sure dateString is in scope
+            }}
+          >
+            {course.name}
+          </Card>
         ))}
       </div>
     );
   };
-
+  
   const handleDrop = (e, dateString) => {
     e.preventDefault();
     const courseId = parseInt(e.dataTransfer.getData("courseId"));
-    const course = courses.find((c) => c.id === courseId);
-
-    if (course) {
+    const courseIndex = courses.findIndex((c) => c.id === courseId);
+    
+    if (courseIndex !== -1) {
+      const course = courses[courseIndex];
+      setCourses(courses.filter((c, index) => index !== courseIndex));
+  
       setCalendarEvents((prevEvents) => ({
         ...prevEvents,
         [dateString]: [...(prevEvents[dateString] || []), course],
       }));
     }
   };
+  // New handleSourceDrop function
+  const handleSourceDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const courseId = parseInt(e.dataTransfer.getData("courseId"), 10);
+    const dateString = e.dataTransfer.getData("eventDate");
+  
+    console.log(`Dropped course ID: ${courseId}, Date: ${dateString}`);
+    
+    // Remove the course from calendarEvents
+    const newCalendarEvents = { ...calendarEvents };
+    const coursesOnDate = newCalendarEvents[dateString] || [];
+    const updatedCoursesOnDate = coursesOnDate.filter(course => course.id !== courseId);
+  
+    if (updatedCoursesOnDate.length > 0) {
+      newCalendarEvents[dateString] = updatedCoursesOnDate;
+    } else {
+      delete newCalendarEvents[dateString];
+    }
+  
+    // Add the course back to the source (courses)
+    const courseToAddBack = coursesOnDate.find(course => course.id === courseId);
+    if (courseToAddBack) {
+      setCourses([...courses, courseToAddBack]);
+    }
+  
+    setCalendarEvents(newCalendarEvents);
+  };
+  
+
 
   return (
     <div className="container">
-      <div className="src-column">
+      <div
+  className="src-column"
+  onDrop={handleSourceDrop}
+  onDragOver={(e) => e.preventDefault()}
+  style={{ height: '400px', border: '1px solid black' }} 
+>
       <Form onFinish={addCourse}>
           <Form.Item>
             <Input
@@ -115,9 +155,12 @@ const handleCancel = () => {
          className="draggable-course"
          style={cardStyle}
          draggable
-         onDragStart={(e) =>
-           e.dataTransfer.setData("courseId", course.id.toString())
-         }
+         onDragStart={(e) => {
+          e.dataTransfer.setData("courseId", course.id.toString());
+          e.dataTransfer.setData("eventDate", course.date); // assuming each course has a date field
+        }}
+        
+        
          onClick={() => showModal(course)}
        >
          {course.name}
