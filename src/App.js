@@ -77,9 +77,9 @@ const DragAndDropCalendar = () => {
   ]);
 
   const addCourse = () => {
-    const formatTime = `${(courseTime[0]).format("hh:mm A")} - ${(
-      courseTime[1]
-    ).format("hh:mm A")}`;
+    const formatTime = `${courseTime[0].format(
+      "hh:mm A"
+    )} - ${courseTime[1].format("hh:mm A")}`;
 
     const newCourse = {
       id: Date.now(),
@@ -190,32 +190,48 @@ const DragAndDropCalendar = () => {
         className="src-column"
         onDrop={handleSourceDrop}
         onDragOver={(e) => e.preventDefault()}
-        style={{ 
+        style={{
           backgroundColor: "#f0f2f5",
           borderRadius: "10px",
           margin: "20px",
-         }}
+        }}
       >
         <Form onFinish={addCourse}>
-          <Form.Item label="Course Name">
+          <Form.Item
+            label="Course Name"
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 14, offset: 4 }}
+          >
             <Input
               value={courseName}
               onChange={(e) => setCourseName(e.target.value)}
             />
           </Form.Item>
-          <Form.Item label="Course Title">
+          <Form.Item
+            label="Course Title"
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 14, offset: 4 }}
+          >
             <Input
               value={courseTitle}
               onChange={(e) => setCourseTitle(e.target.value)}
             />
           </Form.Item>
-          <Form.Item label="Description">
+          <Form.Item
+            label="Description"
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 14, offset: 4 }}
+          >
             <Input
               value={courseDescription}
               onChange={(e) => setCourseDescription(e.target.value)}
             />
           </Form.Item>
-          <Form.Item label="Time">
+          <Form.Item
+            label="Time"
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 14, offset: 4 }}
+          >
             <TimePicker.RangePicker
               format="HH:mm"
               value={courseTime}
@@ -224,23 +240,29 @@ const DragAndDropCalendar = () => {
               }}
             />
           </Form.Item>
-
-          <Form.Item label="Amount">
+          <Form.Item
+            label="Amount"
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 14, offset: 4 }}
+          >
             <Input
               type="number"
               value={courseAmount}
               onChange={(e) => setCourseAmount(e.target.value)}
             />
           </Form.Item>
-          <Form.Item label="Tags">
-            {/* Ant Design has a Tags Input but here's a simple one for example */}
+          <Form.Item
+            label="Tags"
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 14, offset: 4 }}
+          >
             <Input
               value={courseTags.join(", ")}
               onChange={(e) => setCourseTags(e.target.value.split(", "))}
             />
           </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
+          <Form.Item wrapperCol={{ offset: 3, span: 18 }}>
+            <Button type="primary" htmlType="submit" block>
               Add Course
             </Button>
           </Form.Item>
@@ -248,19 +270,35 @@ const DragAndDropCalendar = () => {
 
         <div
           style={{
-            display: "flex",
-            // justifyContent: "center",
-            // alignItems: "center",
-            // margin: "20px",
-            // height: "100%",
+            borderTop: "1px solid #ccc",
+            padding: "10px",
           }}
         >
-          {courses.map((course) => (
-            <Card
+          {courses.map((course,index) => (
+            
+           <div
+            key={course.id}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "5px",
+            }}
+           >
+           <span
+            style={{
+              marginRight: "10px",
+              
+            }}
+           >
+            {index+1}
+           </span>
+           <Card
               key={course.id}
               className="draggable-course"
               style={{
-                cursor: "move"
+                cursor: "move",
+                width: "100%",
               }}
               draggable
               onDragStart={(e) => {
@@ -271,6 +309,7 @@ const DragAndDropCalendar = () => {
             >
               {course.name}
             </Card>
+           </div>
           ))}
         </div>
       </div>
