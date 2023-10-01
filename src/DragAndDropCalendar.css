@@ -1,25 +1,31 @@
 .container {
-    display: flex;
-  }
-  
-  .src-column, .playground-column {
-    padding: 20px;
-    width: 50%;
-  }
-  
-  .src-column {
-    border-right: 1px solid #ccc;
-  }
-  
-  .playground-column {
-    width: 50%;
-  }
-  
-  .droppable-area {
-    min-height: 50px;
-  }
-  
-  .draggable-course {
-    margin-bottom: 10px;
-  }
-  
+  display: flex;
+}
+
+.src-column,
+.playground-column {
+  padding: 20px;
+  width: 50%;
+}
+
+.src-column {
+  border-right: 1px solid #ccc;
+}
+
+.playground-column {
+  width: 50%;
+}
+
+.droppable-area {
+  min-height: 50px;
+}
+
+.draggable-course {
+  background-color: #f4f4f4;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1);
+  /* width: 200px; */
+}

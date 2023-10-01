@@ -1,8 +1,33 @@
-import { Button, Calendar, Card, Form, Input } from "antd";
+import { Button, Calendar, Card, Form, Input, Modal } from "antd";
 import React, { useState } from "react";
 import "./DragAndDropCalendar.css";
 
 const DragAndDropCalendar = () => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+const [selectedCourse, setSelectedCourse] = useState(null);
+const [editedCourseName, setEditedCourseName] = useState("");
+
+const showModal = (course) => {
+  setSelectedCourse(course);
+  setEditedCourseName(course.name);
+  setIsModalVisible(true);
+};
+const handleUpdateCourse = () => {
+  const updatedCourses = courses.map((course) => {
+    if (course.id === selectedCourse.id) {
+      return { ...course, name: editedCourseName };
+    }
+    return course;
+  });
+  setCourses(updatedCourses);
+  setIsModalVisible(false);
+};
+
+
+const handleCancel = () => {
+  setIsModalVisible(false);
+};
+
   const [courseName, setCourseName] = useState("");
   const addCourse = () => {
     console.log(courseName);
@@ -11,11 +36,16 @@ const DragAndDropCalendar = () => {
     setCourseName("");
   };
   const [courses, setCourses] = useState([
-    { id: 1, name: "Math 101" },
-    { id: 2, name: "History 201" },
+    // { id: 1, name: "Math 101" },
+    // { id: 2, name: "History 201" },
   ]);
   const [calendarEvents, setCalendarEvents] = useState({});
-
+  const cardStyle = {
+    margin: "10px",
+    // cursor: "move",
+    
+  };
+  
   const handleDateCellRender = (value) => {
     const dateString = value.format("YYYY-MM-DD");
     return (
@@ -25,9 +55,18 @@ const DragAndDropCalendar = () => {
         onDragOver={(e) => e.preventDefault()}
       >
         {calendarEvents[dateString]?.map((course, index) => (
-          <Card key={index} size="small">
-            {course.name}
-          </Card>
+          <Card
+          key={course.id}
+          className="draggable-course"
+          draggable
+          style={cardStyle}
+          onDragStart={(e) =>
+            e.dataTransfer.setData("courseId", course.id.toString())
+          }
+        >
+          {course.name}
+        </Card>
+        
         ))}
       </div>
     );
@@ -63,22 +102,50 @@ const DragAndDropCalendar = () => {
             </Button>
           </Form.Item>
         </Form>
+        <div style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          margin:"20px",
+          // height: "100%",
+        }}>
         {courses.map((course) => (
-          <Card
-            key={course.id}
-            className="draggable-course"
-            draggable
-            onDragStart={(e) =>
-              e.dataTransfer.setData("courseId", course.id.toString())
-            }
-          >
-            {course.name}
-          </Card>
+         <Card
+         key={course.id}
+         className="draggable-course"
+         style={cardStyle}
+         draggable
+         onDragStart={(e) =>
+           e.dataTransfer.setData("courseId", course.id.toString())
+         }
+         onClick={() => showModal(course)}
+       >
+         {course.name}
+       </Card>
+       
         ))}
+        </div>
       </div>
       <div className="playground-column">
         <Calendar cellRender={handleDateCellRender} />
       </div>
+      <Modal
+      title="Edit Course Details"
+      visible={isModalVisible}
+      onCancel={handleCancel}
+      onOk={handleUpdateCourse}
+    >
+      <Form>
+        <Form.Item label="Course Name">
+          <Input
+            value={editedCourseName}
+            onChange={(e) => setEditedCourseName(e.target.value)}
+          />
+        </Form.Item>
+      </Form>
+    </Modal>
+
+
     </div>
   );
 };
